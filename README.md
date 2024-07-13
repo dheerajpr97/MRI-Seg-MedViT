@@ -57,4 +57,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ### Acknowledgments
 This project utilizes the MedViT model and related scripts from the [Original Repository](https://github.com/Omid-Nejati/MedViT). 
-Thanks to all contributors and maintainers of the libraries and frameworks used in this project.
+
+### TO DO
+
+- Refactor code in all the scripts
+- Add a UI script and expose it locally as an application
+- Encapsulate and Containerize the project
+- Add a CI/CD pipeline
