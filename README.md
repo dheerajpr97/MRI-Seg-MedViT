@@ -4,16 +4,6 @@ This project focuses on fine-tuning the MedViT (Medical Vision Transformer) mode
 
 ## Getting Started
 
-### Prerequisites
-
-- Python 3.8+
-- PyTorch 1.7+
-- OpenCV
-- Matplotlib
-- NumPy
-- PIL
-- Scikit-learn
-
 ### Installation
 
 1. Clone the repository:
@@ -54,7 +44,7 @@ To visualize the segmentation results, use the following command:
 The visualization will show the original images, ground truth masks, predicted masks, and overlayed masks with contours along with their IoU scores.
 
 ### Results
- <!-- output.jpeg -->
+ ![Output](output.jpeg)
 ## Interpretation
 - Images: Original MRI scans.
 - Ground Truth Masks: Manually annotated masks.
