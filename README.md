@@ -4,16 +4,6 @@ This project focuses on fine-tuning the MedViT (Medical Vision Transformer) mode
 
 ## Getting Started
 
-### Prerequisites
-
-- Python 3.8+
-- PyTorch 1.7+
-- OpenCV
-- Matplotlib
-- NumPy
-- PIL
-- Scikit-learn
-
 ### Installation
 
 1. Clone the repository:
@@ -26,18 +16,19 @@ This project focuses on fine-tuning the MedViT (Medical Vision Transformer) mode
 
 ### Dataset Preparation
 Ensure your dataset is organized as follows:
-
+```
 data/
-  lgg-mri-segmentation/
-    TCGA_CS_4941_19960909/
+   lgg-mri-segmentation/
+      TCGA_CS_4941_19960909/
       image1.tif
       image1_mask.tif
       ...
-    ...
-  splits/
-    train_indices.txt
-    val_indices.txt
-    test_indices.txt
+      
+   splits/
+      train_indices.txt
+      val_indices.txt
+      test_indices.txt
+```
 
 ### Training the Model
 To train the model, run the following command:
@@ -48,13 +39,13 @@ To train the model, run the following command:
 ### Visualizing the Results
 To visualize the segmentation results, use the following command:
 
-      ```sh 
-      python main.py visualize --data_dir data/lgg-mri-segmentation --model_path saved_models/best_model_epoch_xx.pth --batch_size 4
-      ```
+ ```sh 
+ python main.py visualize --data_dir data/lgg-mri-segmentation --model_path saved_models/best_model_epoch_xx.pth --batch_size 4
+ ```
 The visualization will show the original images, ground truth masks, predicted masks, and overlayed masks with contours along with their IoU scores.
 
 ### Results
- <!-- output.jpeg -->
+ ![Output](output.jpeg)
 ## Interpretation
 - Images: Original MRI scans.
 - Ground Truth Masks: Manually annotated masks.

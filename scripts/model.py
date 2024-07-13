@@ -3,7 +3,7 @@ import os
 
 import torch
 import torch.nn as nn
-from MedViT.MedViT import MedViT_small as tiny
+from scripts.MedViT.MedViT import MedViT_small as tiny
 
 def get_pretrained_model():
     pretrained_model = tiny()

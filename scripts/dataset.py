@@ -1,4 +1,4 @@
-# scripts/dataset.py
+# python scripts/dataset.py
 
 import os
 from PIL import Image
@@ -6,14 +6,15 @@ from torch.utils.data import Dataset
 import torchvision.transforms as transforms
 
 class LGGSegmentationDataset(Dataset):
-    def __init__(self, root_dir, transform=None, target_transform=None):
+    def __init__(self, root_dir, indices, transform=None, target_transform=None):
         self.root_dir = root_dir
         self.transform = transform
         self.target_transform = target_transform
         self.image_paths = []
         self.mask_paths = []
 
-        for case in os.listdir(root_dir):
+        for idx in indices:
+            case = os.listdir(root_dir)[idx]
             case_dir = os.path.join(root_dir, case)
             if os.path.isdir(case_dir):
                 for file in os.listdir(case_dir):
@@ -38,6 +39,11 @@ class LGGSegmentationDataset(Dataset):
 
         return image, mask
 
+def load_indices(file_path):
+    with open(file_path, 'r') as f:
+        indices = [int(line.strip()) for line in f]
+    return indices
+
 image_transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
@@ -51,6 +57,8 @@ mask_transform = transforms.Compose([
 
 if __name__ == "__main__":
     # Test the dataset script
-    dataset = LGGSegmentationDataset(root_dir='data\lgg-mri-segmentation', transform=image_transform, target_transform=mask_transform)
+    indices_path = 'data/splits/train_indices.txt'
+    indices = load_indices(indices_path)
+    dataset = LGGSegmentationDataset(root_dir='data/lgg-mri-segmentation', indices=indices, transform=image_transform, target_transform=mask_transform)
     image, mask = dataset[0]
     print(image.shape, mask.shape)

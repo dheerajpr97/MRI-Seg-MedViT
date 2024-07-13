@@ -1,15 +1,17 @@
-# scripts/train.py
+# python scripts/train.py --data_dir 'data/lgg-mri-segmentation' --indices_dir 'data/splits' --epochs 10 --batch_size 8 --lr 0.001 --save_dir 'saved_models'
+
 
 import os
 import time
 import torch
-import torch.optim as optim
 import torch.nn as nn
+import torch.optim as optim
 from torch.utils.data import DataLoader
-
-from dataset import LGGSegmentationDataset, image_transform, mask_transform
-from model import get_pretrained_model, MedViT_Segmentation
 from sklearn.model_selection import train_test_split
+from scripts.dataset import LGGSegmentationDataset, image_transform, mask_transform, load_indices
+from scripts.model import MedViT_Segmentation, get_pretrained_model
+from scripts.losses import BCEWithLogitsDiceLoss
+import torchvision.transforms as transforms  # Import transforms
 
 def train(model, train_loader, criterion, optimizer, device):
     model.train()
@@ -60,21 +62,33 @@ def validate(model, val_loader, criterion, device):
     avg_val_loss = val_loss / len(val_loader)
     return avg_val_loss
 
-def main(data_dir, epochs, batch_size, lr, save_dir):
-    dataset = LGGSegmentationDataset(root_dir=data_dir, transform=image_transform, target_transform=mask_transform)
+def main(data_dir, indices_dir, epochs, batch_size, lr, save_dir):
+    train_indices = load_indices(os.path.join(indices_dir, 'train_indices.txt'))
+    val_indices = load_indices(os.path.join(indices_dir, 'val_indices.txt'))
+    test_indices = load_indices(os.path.join(indices_dir, 'test_indices.txt'))
 
-    # Split dataset into train and validation sets
-    train_indices, val_indices = train_test_split(range(len(dataset)), test_size=0.3, random_state=42)
-    train_dataset = torch.utils.data.Subset(dataset, train_indices)
-    val_dataset = torch.utils.data.Subset(dataset, val_indices)
-    
+    image_transform = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor()
+    ])
+
+    mask_transform = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor()
+    ])
+
+    train_dataset = LGGSegmentationDataset(root_dir=data_dir, indices=train_indices, transform=image_transform, target_transform=mask_transform)
+    val_dataset = LGGSegmentationDataset(root_dir=data_dir, indices=val_indices, transform=image_transform, target_transform=mask_transform)
+    test_dataset = LGGSegmentationDataset(root_dir=data_dir, indices=test_indices, transform=image_transform, target_transform=mask_transform)
+
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     pretrained_model = get_pretrained_model()
     model = MedViT_Segmentation(pretrained_model, num_classes=1).to(device)
-    criterion = nn.BCEWithLogitsLoss()
+    criterion = BCEWithLogitsDiceLoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
 
     best_val_loss = float('inf')  # Initialize best validation loss to infinity
@@ -105,6 +119,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description='Train MedViT on LGG MRI Segmentation')
     parser.add_argument('--data_dir', type=str, required=True, help='Path to the dataset directory')
+    parser.add_argument('--indices_dir', type=str, required=True, help='Path to the directory containing split indices')
     parser.add_argument('--epochs', type=int, default=10, help='Number of training epochs')
     parser.add_argument('--batch_size', type=int, default=8, help='Batch size for training')
     parser.add_argument('--lr', type=float, default=0.001, help='Learning rate for the optimizer')
@@ -112,4 +127,5 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    main(args.data_dir, args.epochs, args.batch_size, args.lr, args.save_dir)
+    main(args.data_dir, args.indices_dir, args.epochs, args.batch_size, args.lr, args.save_dir)
+

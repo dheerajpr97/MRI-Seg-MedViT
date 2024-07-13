@@ -12,7 +12,7 @@ from einops import rearrange
 from timm.models.layers import DropPath, trunc_normal_
 from timm.models.registry import register_model
 from torch import nn
-from MedViT.utils import merge_pre_bn
+from scripts.MedViT.utils import merge_pre_bn
 
 NORM_EPS = 1e-5
 
