@@ -1,4 +1,4 @@
-# python scripts/visualization.py --data_dir 'data/lgg-mri-segmentation' --model_path 'saved_models/best_model_epoch_6.pth' --batch_size 4
+# python -m scripts.visualization --data_dir 'data/lgg-mri-segmentation' --model_path 'saved_models/best_model_epoch_6.pth' --batch_size 4
 
 import torch
 import matplotlib.pyplot as plt
@@ -6,13 +6,24 @@ import numpy as np
 from mpl_toolkits.axes_grid1 import ImageGrid
 import cv2
 from scripts.dataset import LGGSegmentationDataset, image_transform, mask_transform
-from scripts.model import MedViT_Segmentation, get_pretrained_model
+from scripts.model import MedViTSegmentation, get_pretrained_model
 from torch.utils.data import DataLoader
 from scripts.utils import unnormalize, overlay_masks, highlight_contours, calculate_iou, load_indices
 import os
 import random
 
 def visualize_results(model, test_loader, device, mean, std, threshold=0.5):
+    """
+    Visualizes the segmentation results by overlaying masks on images and highlighting contours.
+
+    Args:
+        model (nn.Module): Trained segmentation model.
+        test_loader (DataLoader): DataLoader for the test dataset.
+        device (torch.device): Device to run the model on.
+        mean (list): Mean values used for normalization.
+        std (list): Standard deviation values used for normalization.
+        threshold (float, optional): Threshold to convert probabilities to binary masks. Default is 0.5.
+    """
     model.eval()
     positive_diagnosis_samples = []
     iou_scores = []
@@ -29,13 +40,12 @@ def visualize_results(model, test_loader, device, mean, std, threshold=0.5):
                     img = unnormalize(images[idx].cpu(), mean, std).permute(1, 2, 0).numpy()
                     gt_mask = masks[idx].cpu().squeeze().numpy()
                     pred_mask = preds[idx].cpu().squeeze().numpy().astype(np.uint8)
-                    # iou_scores.append(calculate_iou(gt_mask, pred_mask))
                     positive_diagnosis_samples.append((img, gt_mask, pred_mask))
             
-            # if len(positive_diagnosis_samples) >= 5:
-            #     break
+            if len(positive_diagnosis_samples) >= 5:
+                break
 
-    positive_diagnosis_samples = positive_diagnosis_samples[:10]
+    positive_diagnosis_samples = positive_diagnosis_samples[:5]
     
     sample_imgs = [cv2.resize(img, (224, 224)) for img, _, _ in positive_diagnosis_samples]
     sample_gt_masks = [cv2.resize(gt_mask, (224, 224)) for _, gt_mask, _ in positive_diagnosis_samples]
@@ -50,7 +60,7 @@ def visualize_results(model, test_loader, device, mean, std, threshold=0.5):
         iou_score = calculate_iou(gt_mask, pred_mask)
         overlayed_img = overlay_masks(torch.tensor(img).permute(2, 0, 1), torch.tensor(gt_mask), alpha=0.5, color=(0, 255, 0))
         overlayed_img = highlight_contours(overlayed_img, gt_mask, pred_mask, gt_color=(0, 255, 0), pred_color=(255, 0, 0))
-         # Add IoU text to the overlayed image
+        # Add IoU text to the overlayed image
         overlayed_img = cv2.putText(
             overlayed_img, f'IoU: {iou_score:.4f}', (10, 30),
             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2, cv2.LINE_AA
@@ -71,11 +81,6 @@ def visualize_results(model, test_loader, device, mean, std, threshold=0.5):
         ax.grid(False)
 
     plt.show()
-
-def load_indices(indices_path):
-    with open(indices_path, 'r') as file:
-        indices = [int(line.strip()) for line in file]
-    return indices
 
 if __name__ == '__main__':
     import argparse
@@ -98,7 +103,7 @@ if __name__ == '__main__':
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)
 
     pretrained_model = get_pretrained_model()
-    model = MedViT_Segmentation(pretrained_model, num_classes=1).to(device)
+    model = MedViTSegmentation(pretrained_model, num_classes=1).to(device)
     model.load_state_dict(torch.load(args.model_path, map_location=device))
 
     visualize_results(model, test_loader, device, mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], threshold=0.5)
