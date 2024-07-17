@@ -1,5 +1,5 @@
 # python -m main train --data_dir data/lgg-mri-segmentation --indices_dir data/splits --epochs 25 --batch_size 4 --lr 0.001 --save_dir saved_models
-# python -m main visualize --data_dir data/lgg-mri-segmentation --model_path saved_models/best_model_epoch_6.pth --batch_size 4
+# python -m main visualize --data_dir data/lgg-mri-segmentation --model_type 'small' --model_path saved_models/best_model.pth --batch_size 4
 
 import os
 import random
@@ -24,6 +24,7 @@ def parse_arguments():
 
     train_parser = subparsers.add_parser("train", help="Train the model")
     train_parser.add_argument("--data_dir", type=str, required=True, help="Directory containing training and validation data")
+    train_parser.add_argument("--model_type", type=str, default="small", help="Type of pre-trained model to train")
     train_parser.add_argument("--epochs", type=int, default=25, help="Number of epochs to train")
     train_parser.add_argument("--batch_size", type=int, default=4, help="Batch size for training")
     train_parser.add_argument("--lr", type=float, default=0.001, help="Learning rate for training")
@@ -32,9 +33,11 @@ def parse_arguments():
 
     visualize_parser = subparsers.add_parser("visualize", help="Visualize segmentation results")
     visualize_parser.add_argument("--data_dir", type=str, required=True, help="Directory containing test data")
+    visualize_parser.add_argument("--model_type", type=str, default="small", help="Type of pre-trained model to test")
     visualize_parser.add_argument("--model_path", type=str, required=True, help="Path to the trained model")
     visualize_parser.add_argument("--batch_size", type=int, default=4, help="Batch size for testing")
     visualize_parser.add_argument("--indices_dir", type=str, default=None, help="Path to the file containing test indices")
+    visualize_parser.add_argument("--threshold", type=float, default=0.5, help="Threshold for visualization")
 
     return parser.parse_args()
 
@@ -43,7 +46,7 @@ def main():
 
     if args.command == "train":
         print("Starting training...")
-        train_main(args.data_dir, args.indices_dir, args.epochs, args.batch_size, args.lr, args.save_dir)
+        train_main(args.data_dir, args.indices_dir, args.model_type, args.epochs, args.batch_size, args.lr, args.save_dir)
         print("Training completed.")
     elif args.command == "visualize":
         print("Starting visualization...")
@@ -69,7 +72,7 @@ def main():
         test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)
 
         print("Loading pretrained model...")
-        pretrained_model = get_pretrained_model()
+        pretrained_model = get_pretrained_model(pretrained_model=args.model_type)
 
         print("Creating segmentation model...")
         model = MedViTSegmentation(pretrained_model, num_classes=1).to(device)
@@ -84,7 +87,7 @@ def main():
             device, 
             mean=[0.5, 0.5, 0.5], 
             std=[0.5, 0.5, 0.5], 
-            threshold=0.5
+            threshold=args.threshold
         )
         print("Visualization completed.")
 

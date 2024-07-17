@@ -15,6 +15,7 @@ This project focuses on fine-tuning the MedViT (Medical Vision Transformer) mode
    pip install -r requirements.txt
 
 ### Dataset Preparation
+The dataset [LGG MRI Segmentation Dataset][https://www.kaggle.com/datasets/mateuszbuda/lgg-mri-segmentation] is used for obtaining Brain MRI scans. The data corresponds to 110 patients included in The Cancer Genome Atlas (TCGA) lower-grade glioma collection with at least fluid-attenuated inversion recovery (FLAIR) sequence and genomic cluster data available.
 Ensure your dataset is organized as follows:
 ```
 data/
@@ -46,21 +47,25 @@ The visualization will show the original images, ground truth masks, predicted m
 
 ### Results
  ![Output](output.jpeg)
-## Interpretation
+### Interpretation
 - Images: Original MRI scans.
 - Ground Truth Masks: Manually annotated masks.
 - Predicted Masks: Masks predicted by the MedViT model.
 - Overlayed Masks with Contours: Original images with ground truth and predicted mask contours. The IoU score for each sample is displayed above the overlayed image.
 
+### Discussion
+The segmentation results demonstrate that the MedViT model can accurately identify regions of interest in MRI scans. The predicted masks show that finer edges are smoothened, resulting in a neat and cohesive segmentation. However, there is room for improvement. Further tuning and fine-tuning of the model parameters could enhance the segmentation accuracy and edge details. Overall, the current results provide a solid foundation and indicate that the MedViT model is a promising tool for MRI segmentation tasks.
+
 ### License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ### Acknowledgments
+This project utilizes the LGG MRI Segmentation Dataset obtained from [Kaggle][https://www.kaggle.com/datasets/mateuszbuda/lgg-mri-segmentation]
 This project utilizes the MedViT model and related scripts from the [Original Repository](https://github.com/Omid-Nejati/MedViT). 
 
 ### TO DO
 
 -  [x] Refactor code in all the scripts
--  [] Add a UI script and expose it locally as an application
--  [] Encapsulate and Containerize the project
+-  [x] Add an UI script and expose it locally as an application
+-  [] Encapsulate and containerize the project
 -  [] Add a CI/CD pipeline

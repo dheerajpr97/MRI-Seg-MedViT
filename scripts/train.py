@@ -87,7 +87,7 @@ def validate(model, val_loader, criterion, device):
     avg_val_loss = val_loss / len(val_loader)
     return avg_val_loss
 
-def main(data_dir, indices_dir, epochs, batch_size, lr, save_dir):
+def main(data_dir, indices_dir, model_type, epochs, batch_size, lr, save_dir):
     """
     Main function to set up data loaders, model, optimizer, and train/validate the model.
 
@@ -118,17 +118,18 @@ def main(data_dir, indices_dir, epochs, batch_size, lr, save_dir):
     # Create datasets and data loaders
     train_dataset = LGGSegmentationDataset(root_dir=data_dir, indices=train_indices, transform=image_transform, target_transform=mask_transform)
     val_dataset = LGGSegmentationDataset(root_dir=data_dir, indices=val_indices, transform=image_transform, target_transform=mask_transform)
-    test_dataset = LGGSegmentationDataset(root_dir=data_dir, indices=test_indices, transform=image_transform, target_transform=mask_transform)
-
+    
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
-
+    
     # Set device to GPU if available, else use CPU
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    pretrained_model = get_pretrained_model()
+    pretrained_model = get_pretrained_model(pretrained_model=model_type)
     model = MedViTSegmentation(pretrained_model, num_classes=1).to(device)
-    criterion = BCEWithLogitsDiceLoss()
+
+    # Define loss function and optimizer
+    criterion = nn.BCEWithLogitsLoss()
+    # criterion = BCEWithLogitsDiceLoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
 
     best_val_loss = float('inf')  # Initialize best validation loss to infinity
@@ -161,6 +162,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train MedViT on LGG MRI Segmentation')
     parser.add_argument('--data_dir', type=str, required=True, help='Path to the dataset directory')
     parser.add_argument('--indices_dir', type=str, required=True, help='Path to the directory containing split indices')
+    parser.add_argument('--model_type', type=str, default='small', help='Type of pre-trained model to train')
     parser.add_argument('--epochs', type=int, default=10, help='Number of training epochs')
     parser.add_argument('--batch_size', type=int, default=8, help='Batch size for training')
     parser.add_argument('--lr', type=float, default=0.001, help='Learning rate for the optimizer')
@@ -168,5 +170,5 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    main(args.data_dir, args.indices_dir, args.epochs, args.batch_size, args.lr, args.save_dir)
+    main(args.data_dir, args.indices_dir, args.model_type, args.epochs, args.batch_size, args.lr, args.save_dir)
 

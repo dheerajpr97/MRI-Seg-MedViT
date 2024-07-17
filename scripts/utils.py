@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
-import torch
+import torchvision.transforms as transforms
+
 
 def save_indices(indices, file_path):
     """
@@ -87,8 +88,8 @@ def highlight_contours(image, gt_mask, pred_mask, gt_color=(0, 255, 0), pred_col
     gt_contours, _ = cv2.findContours(gt_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     pred_contours, _ = cv2.findContours(pred_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    cv2.drawContours(image, gt_contours, -1, gt_color, 2)
-    cv2.drawContours(image, pred_contours, -1, pred_color, 2)
+    cv2.drawContours(image, gt_contours, -1, gt_color, 1)
+    cv2.drawContours(image, pred_contours, -1, pred_color, 1)
 
     return image
 
@@ -110,3 +111,10 @@ def calculate_iou(gt_mask, pred_mask):
         return 0
     else:
         return intersection / union
+    
+def image_transform():
+    return transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+    ])

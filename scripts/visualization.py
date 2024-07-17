@@ -1,4 +1,4 @@
-# python -m scripts.visualization --data_dir 'data/lgg-mri-segmentation' --model_path 'saved_models/best_model_epoch_6.pth' --batch_size 4
+# python -m scripts.visualization --data_dir 'data/lgg-mri-segmentation' --model_path 'saved_models/best_model.pth' --batch_size 4
 
 import torch
 import matplotlib.pyplot as plt

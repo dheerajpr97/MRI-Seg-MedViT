@@ -2,17 +2,26 @@
 
 import torch
 import torch.nn as nn
-from scripts.MedViT.MedViT import MedViT_small as tiny
+from scripts.MedViT.MedViT import MedViT_small as small
+from scripts.MedViT.MedViT import MedViT_large as large 
 
-def get_pretrained_model():
+def get_pretrained_model(pretrained_model='small'):
     """
     Loads the pre-trained MedViT_small model.
 
     Returns:
         nn.Module: The pre-trained MedViT model.
     """
-    pretrained_model = tiny()
-    checkpoint = torch.load('saved_models/MedViT_small_im1k.pth')
+    if pretrained_model == 'small':
+        pretrained_model = small()
+        checkpoint = torch.load('saved_models/MedViT_small_im1k.pth')
+    elif pretrained_model == 'large':
+        pretrained_model = large()
+        checkpoint = torch.load('saved_models/MedViT_large_im1k.pth')
+    else:
+        raise ValueError(f"Invalid pretrained model: {pretrained_model}")
+    
+    #checkpoint = torch.load('saved_models/MedViT_small_im1k.pth')
     pretrained_model.load_state_dict(checkpoint['model'])
     return pretrained_model
 
@@ -59,7 +68,7 @@ class MedViTSegmentation(nn.Module):
 
 if __name__ == "__main__":
     # Load the pretrained model and initialize the segmentation model
-    pretrained_model = get_pretrained_model()
+    pretrained_model = get_pretrained_model(pretrained_model='small')
     print("Pretrained Med-ViT model loaded successfully")
     model = MedViTSegmentation(pretrained_model, num_classes=1)
     print("Segmentation Model loaded successfully")

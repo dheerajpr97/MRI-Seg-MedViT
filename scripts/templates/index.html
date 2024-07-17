@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain MRI Segmentation using MedViT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #0066cc;
+        }
+        p {
+            max-width: 600px;
+            text-align: center;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="file"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #0066cc;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type="submit"]:hover {
+            background-color: #005bb5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Brain MRI Segmentation using MedViT</h1>
+    <p>
+        <p>
+            This project focuses on fine-tuning the MedViT (Medical Vision Transformer) model for MRI segmentation tasks. 
+            The goal is to accurately segment regions of interest in MRI scans using a pre-trained MedViT model, followed by 
+            evaluating the performance using Intersection over Union (IoU). For more information, please visit the
+            <a href="https://github.com/dheerajpr97/MRI-Seg-MedViT">GitHub Repository</a>.
+        </p>
+    </p>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <label for="file">Select Brain MRI Image:</label>
+        <input type="file" name="file" id="file" accept=".tif" required>
+        
+        <label for="mask">Select corresponding ground truth mask (optional):</label>
+        <input type="file" name="mask" id="mask" accept=".tif">
+        
+        <input type="submit" value="Upload">
+    </form>
+</body>
+</html>
