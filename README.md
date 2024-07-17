@@ -60,7 +60,7 @@ The segmentation results demonstrate that the MedViT model can accurately identi
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ### Acknowledgments
-This project utilizes the LGG MRI Segmentation Dataset obtained from [Kaggle](https://www.kaggle.com/datasets/mateuszbuda/lgg-mri-segmentation)
+This project utilizes the LGG MRI Segmentation Dataset obtained from [Kaggle](https://www.kaggle.com/datasets/mateuszbuda/lgg-mri-segmentation).
 This project utilizes the MedViT model and related scripts from the [Original Repository](https://github.com/Omid-Nejati/MedViT). 
 
 ### TO DO
