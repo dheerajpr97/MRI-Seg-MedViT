@@ -13,6 +13,10 @@ This project focuses on fine-tuning the MedViT (Medical Vision Transformer) mode
 2. Install the required packages:
    ```sh
    pip install -r requirements.txt
+3. To avoid training and to use the pre-trained checkpoints for both the segmentation and MedViT models: 
+   ```sh
+   python setup.py
+   ```
 
 ### Dataset Preparation
 The dataset [LGG MRI Segmentation Dataset][https://www.kaggle.com/datasets/mateuszbuda/lgg-mri-segmentation] is used for obtaining Brain MRI scans. The data corresponds to 110 patients included in The Cancer Genome Atlas (TCGA) lower-grade glioma collection with at least fluid-attenuated inversion recovery (FLAIR) sequence and genomic cluster data available.
@@ -40,9 +44,9 @@ To train the model, run the following command:
 ### Visualizing the Results
 To visualize the segmentation results, use the following command:
 
- ```sh 
- python main.py visualize --data_dir data/lgg-mri-segmentation --model_path saved_models/best_model_epoch_xx.pth --batch_size 4
- ```
+   ```sh 
+   python -m scripts.visualization --data_dir 'data/lgg-mri-segmentation' --indices_dir 'data/splits/test_indices.txt' --model_path 'saved_models/checkpoint.pth' --batch_size 4
+   ```
 The visualization will show the original images, ground truth masks, predicted masks, and overlayed masks with contours along with their IoU scores.
 
 ### Results
