@@ -1,32 +1,33 @@
 import cv2
 import numpy as np
 import torchvision.transforms as transforms
+from PIL import Image
 
 
 def save_indices(indices, file_path):
     """
-    Saves a list of indices to a file.
+    Saves indices to a file.
 
     Args:
         indices (list): List of indices to save.
         file_path (str): Path to the file where indices will be saved.
     """
     with open(file_path, 'w') as f:
-        for idx in indices:
-            f.write(f"{idx}\n")
+        for index in indices:
+            f.write(f"{index}\n")
 
 def load_indices(file_path):
     """
     Loads indices from a file.
 
     Args:
-        file_path (str): Path to the file containing the indices.
+        file_path (str): Path to the file containing indices.
 
     Returns:
-        list: List of integers representing the indices.
+        list: List of indices as strings.
     """
     with open(file_path, 'r') as f:
-        indices = [int(line.strip()) for line in f]  # Read and convert each line to an integer
+        indices = [line.strip() for line in f]  # Read each line and strip any extra whitespace
     return indices
 
 def unnormalize(img, mean, std):

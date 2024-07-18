@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = MedViTSegmentation(get_pretrained_model(), num_classes=1).to(device)
-model.load_state_dict(torch.load('saved_models/best_model.pth', map_location=device))
+model.load_state_dict(torch.load('saved_models/checkpoint.pth', map_location=device))
 model.eval()
 
 def load_image(image_stream):
@@ -34,6 +34,13 @@ def load_mask(mask_stream, size):
     mask = torch.tensor(mask).unsqueeze(0).unsqueeze(0).float()
     mask = (mask > 127).float()
     return mask
+
+def convert_jpeg_to_tif(jpeg_stream):
+    image = Image.open(jpeg_stream).convert('RGB')
+    tif_stream = io.BytesIO()
+    image.save(tif_stream, format='TIFF')
+    tif_stream.seek(0)
+    return tif_stream
 
 def visualize_single_image(model, image_stream, mask_stream, device, mean, std, threshold=0.5):
     image = load_image(image_stream).to(device)
@@ -80,38 +87,42 @@ def upload_image():
     mask = request.files.get('mask')
     if file.filename == '':
         return 'No selected file'
-    if file and file.filename.endswith('.tif'):
-        try:
+    
+    try:
+        if file.filename.endswith('.jpeg') or file.filename.endswith('.jpg'):
+            img_stream = convert_jpeg_to_tif(io.BytesIO(file.read()))
+        elif file.filename.endswith('.tif'):
             img_stream = io.BytesIO(file.read())
-            mask_stream = io.BytesIO(mask.read()) if mask and mask.filename != '' else None
-            
-            img, overlayed_img, iou_score = visualize_single_image(model, img_stream, mask_stream, device, mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], threshold=0.5)
-            
-            fig, ax = plt.subplots(1, 2, figsize=(15, 7))
-            ax[0].imshow(img)
-            ax[0].set_title('Original Image')
-            ax[0].axis("off")
-            
-            title = 'Overlayed Image with Mask'
-            if iou_score is not None:
-                title += f'\nIoU Score: {iou_score:.2f}'
-            ax[1].imshow(overlayed_img)
-            ax[1].set_title(title)
-            ax[1].axis("off")
-            
-            img_bytes = io.BytesIO()
-            plt.savefig(img_bytes, format='jpeg')
-            img_bytes.seek(0)
-            plt.close(fig)
-            print(f"Output prepared for response")
+        else:
+            return 'Invalid file type. Please upload a .tif or .jpeg file.'
 
-            return send_file(img_bytes, mimetype='image/jpeg')
-
-        except Exception as e:
-            print(f"Error during processing: {str(e)}")
-            return str(e)
+        mask_stream = io.BytesIO(mask.read()) if mask and mask.filename != '' else None
         
-    return 'Invalid file type. Please upload a .tif file.'
+        img, overlayed_img, iou_score = visualize_single_image(model, img_stream, mask_stream, device, mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], threshold=0.5)
+        
+        fig, ax = plt.subplots(1, 2, figsize=(15, 7))
+        ax[0].imshow(img)
+        ax[0].set_title('Original Image')
+        ax[0].axis("off")
+        
+        title = 'Overlayed Image with Mask'
+        if iou_score is not None:
+            title += f'\nIoU Score: {iou_score:.2f}'
+        ax[1].imshow(overlayed_img)
+        ax[1].set_title(title)
+        ax[1].axis("off")
+        
+        img_bytes = io.BytesIO()
+        plt.savefig(img_bytes, format='jpeg')
+        img_bytes.seek(0)
+        plt.close(fig)
+        print(f"Output prepared for response")
 
+        return send_file(img_bytes, mimetype='image/jpeg')
+
+    except Exception as e:
+        print(f"Error during processing: {str(e)}")
+        return str(e)
+        
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

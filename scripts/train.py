@@ -165,7 +165,7 @@ if __name__ == "__main__":
     parser.add_argument('--model_type', type=str, default='small', help='Type of pre-trained model to train')
     parser.add_argument('--epochs', type=int, default=10, help='Number of training epochs')
     parser.add_argument('--batch_size', type=int, default=8, help='Batch size for training')
-    parser.add_argument('--lr', type=float, default=0.001, help='Learning rate for the optimizer')
+    parser.add_argument('--lr', type=float, default=1e-4, help='Learning rate for the optimizer')
     parser.add_argument('--save_dir', type=str, default='saved_models', help='Directory to save model checkpoints')
     
     args = parser.parse_args()

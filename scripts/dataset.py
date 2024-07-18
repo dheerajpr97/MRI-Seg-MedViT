@@ -1,6 +1,5 @@
 # python -m scripts.dataset
 
-import os
 from PIL import Image
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
@@ -12,7 +11,7 @@ class LGGSegmentationDataset(Dataset):
 
     Args:
         root_dir (str): Root directory of the dataset.
-        indices (list): List of indices representing the dataset.
+        indices (list): List of file paths representing the dataset.
         transform (optional): Transform to be applied to the images.
         target_transform (optional): Transform to be applied to the masks.
     """
@@ -24,17 +23,13 @@ class LGGSegmentationDataset(Dataset):
         self.mask_paths = []
 
         # Iterate over the indices and populate image and mask paths
-        for idx in indices:
-            case = os.listdir(root_dir)[idx]  # Get the case directory by index
-            case_dir = os.path.join(root_dir, case)
-            if os.path.isdir(case_dir):  # Ensure it's a directory
-                for file in os.listdir(case_dir):
-                    if file.endswith('.tif') and not file.endswith('_mask.tif'):
-                        # Add image path
-                        self.image_paths.append(os.path.join(case_dir, file))
-                        # Add corresponding mask path
-                        mask_path = os.path.join(case_dir, file.replace('.tif', '_mask.tif'))
-                        self.mask_paths.append(mask_path)
+        for file_path in indices:
+            if file_path.endswith('.tif') and not file_path.endswith('_mask.tif'):
+                # Add image path
+                self.image_paths.append(file_path)
+                # Add corresponding mask path
+                mask_path = file_path.replace('.tif', '_mask.tif')
+                self.mask_paths.append(mask_path)
 
     def __len__(self):
         """

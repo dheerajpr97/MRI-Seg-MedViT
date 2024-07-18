@@ -1,4 +1,4 @@
-# python -m scripts.visualization --data_dir 'data/lgg-mri-segmentation' --model_path 'saved_models/best_model.pth' --batch_size 4
+# python -m scripts.visualization --data_dir 'data/lgg-mri-segmentation' --indices_dir 'data/splits' --model_path 'saved_models/best_model.pth' --batch_size 4
 
 import torch
 import matplotlib.pyplot as plt
@@ -26,8 +26,7 @@ def visualize_results(model, test_loader, device, mean, std, threshold=0.5):
     """
     model.eval()
     positive_diagnosis_samples = []
-    iou_scores = []
-
+    
     with torch.no_grad():
         for images, masks in test_loader:
             images, masks = images.to(device), masks.to(device)
@@ -42,10 +41,10 @@ def visualize_results(model, test_loader, device, mean, std, threshold=0.5):
                     pred_mask = preds[idx].cpu().squeeze().numpy().astype(np.uint8)
                     positive_diagnosis_samples.append((img, gt_mask, pred_mask))
             
-            if len(positive_diagnosis_samples) >= 5:
+            if len(positive_diagnosis_samples) >= 10:
                 break
 
-    positive_diagnosis_samples = positive_diagnosis_samples[:5]
+    positive_diagnosis_samples = positive_diagnosis_samples[:10]
     
     sample_imgs = [cv2.resize(img, (224, 224)) for img, _, _ in positive_diagnosis_samples]
     sample_gt_masks = [cv2.resize(gt_mask, (224, 224)) for _, gt_mask, _ in positive_diagnosis_samples]
@@ -97,7 +96,7 @@ if __name__ == '__main__':
         test_indices = load_indices(args.indices_dir)
     else:
         dataset_size = len(os.listdir(args.data_dir))
-        test_indices = random.sample(range(dataset_size), int(0.3 * dataset_size))
+        test_indices = random.sample(os.listdir(args.data_dir), int(0.3 * dataset_size))
 
     test_dataset = LGGSegmentationDataset(root_dir=args.data_dir, indices=test_indices, transform=image_transform, target_transform=mask_transform)
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)

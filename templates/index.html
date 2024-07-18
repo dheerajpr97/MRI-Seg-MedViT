@@ -63,16 +63,14 @@
 <body>
     <h1>Brain MRI Segmentation using MedViT</h1>
     <p>
-        <p>
-            This project focuses on fine-tuning the MedViT (Medical Vision Transformer) model for MRI segmentation tasks. 
-            The goal is to accurately segment regions of interest in MRI scans using a pre-trained MedViT model, followed by 
-            evaluating the performance using Intersection over Union (IoU). For more information, please visit the
-            <a href="https://github.com/dheerajpr97/MRI-Seg-MedViT">GitHub Repository</a>.
-        </p>
+        This project focuses on fine-tuning the MedViT (Medical Vision Transformer) model for MRI segmentation tasks. 
+        The goal is to accurately segment regions of interest in MRI scans using a pre-trained MedViT model, followed by 
+        evaluating the performance using Intersection over Union (IoU). For more information, please visit the
+        <a href="https://github.com/dheerajpr97/MRI-Seg-MedViT">GitHub Repository</a>.
     </p>
     <form action="/upload" method="post" enctype="multipart/form-data">
         <label for="file">Select Brain MRI Image:</label>
-        <input type="file" name="file" id="file" accept=".tif" required>
+        <input type="file" name="file" id="file" accept=".tif, .jpeg, .jpg" required>
         
         <label for="mask">Select corresponding ground truth mask (optional):</label>
         <input type="file" name="mask" id="mask" accept=".tif">
