@@ -41,10 +41,10 @@ def visualize_results(model, test_loader, device, mean, std, threshold=0.5):
                     pred_mask = preds[idx].cpu().squeeze().numpy().astype(np.uint8)
                     positive_diagnosis_samples.append((img, gt_mask, pred_mask))
             
-            if len(positive_diagnosis_samples) >= 5:
+            if len(positive_diagnosis_samples) >= 10:
                 break
 
-    positive_diagnosis_samples = positive_diagnosis_samples[:5]
+    positive_diagnosis_samples = positive_diagnosis_samples[:10]
     
     sample_imgs = [cv2.resize(img, (224, 224)) for img, _, _ in positive_diagnosis_samples]
     sample_gt_masks = [cv2.resize(gt_mask, (224, 224)) for _, gt_mask, _ in positive_diagnosis_samples]

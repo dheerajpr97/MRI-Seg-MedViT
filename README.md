@@ -50,7 +50,7 @@ To visualize the segmentation results, use the following command:
 The visualization will show the original images, ground truth masks, predicted masks, and overlayed masks with contours along with their IoU scores.
 
 ### Results
- ![Output](output_main.jpeg)
+ ![Output](output_10.jpeg)
 ### Interpretation
 - Images: Original MRI scans.
 - Ground Truth Masks: Manually annotated masks.
