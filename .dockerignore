@@ -1,0 +1,38 @@
+# .dockerignore
+# Ignore these files and directories when building the docker image.
+
+.dockerignore
+.git/
+.gitignore
+README.md
+#setup.py
+LICENSE
+.env
+.env.example
+.dockerignore
+*.egg-info/
+dist/
+build/
+*.log
+*.pyc
+*.so
+*.dill
+*.whl
+*.tar.gz
+*.egg
+*.cfg
+*.json
+*.yml
+*.yaml
+*.sh
+*.zip
+
+# Ignore any files and directories whose name starts with "."
+*.*/.*/
+
+# Ignore any files and directories with these names
+__pycache__/
+.env*
+
+data/
+notebooks/

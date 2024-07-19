@@ -3,7 +3,7 @@ Flask==3.0.3
 fvcore==0.1.5.post20221221
 logger==1.4
 matplotlib==3.8.3
-numpy==2.0.0
+numpy>=1.21,<2.0.0
 opencv_python==4.9.0.80
 Pillow==10.4.0
 scikit_learn==1.4.1.post1

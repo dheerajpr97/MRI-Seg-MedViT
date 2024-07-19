@@ -1,4 +1,4 @@
-# MRI Segmentation using MedViT
+# Brain MRI Segmentation using MedViT
 
 This project focuses on fine-tuning the MedViT (Medical Vision Transformer) model for MRI segmentation tasks. The goal is to accurately segment regions of interest in MRI scans using a pre-trained MedViT model, followed by evaluating the performance using various metrics such as Intersection over Union (IoU).
 
@@ -60,6 +60,20 @@ The visualization will show the original images, ground truth masks, predicted m
 ### Discussion
 The segmentation results demonstrate that the MedViT model can accurately identify regions of interest in MRI scans. The predicted masks show that finer edges are smoothened, resulting in a neat and cohesive segmentation. However, there is room for improvement. Further tuning and fine-tuning of the model parameters could enhance the segmentation accuracy and edge details. Overall, the current results provide a solid foundation and indicate that the MedViT model is a promising tool for MRI segmentation tasks.
 
+### Using Docker
+To containerize and run the project using Docker, follow these steps:
+
+1. Build the Docker image:
+
+```sh
+docker build -t mri-medvit-app .
+```
+2. Run the Docker container:
+```sh
+docker run -p 5000:80 mri-medvit-app
+```
+This will start the application and map port 5000 (for example) on your host to port 80 in the Docker container. You can access the application at http://localhost:5000.
+
 ### License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
@@ -71,5 +85,5 @@ This project utilizes the MedViT model and related scripts from the [Original Re
 
 -  [x] Refactor code in all the scripts
 -  [x] Add an UI script and expose it locally as an application
--  [] Encapsulate and containerize the project
+-  [x] Encapsulate and containerize the project
 -  [] Add a CI/CD pipeline

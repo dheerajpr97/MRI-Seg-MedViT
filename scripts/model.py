@@ -1,5 +1,6 @@
 # python -m scripts.model
 
+import os
 import torch
 import torch.nn as nn
 from scripts.MedViT.MedViT import MedViT_small as small
@@ -7,23 +8,31 @@ from scripts.MedViT.MedViT import MedViT_large as large
 
 def get_pretrained_model(pretrained_model='small'):
     """
-    Loads the pre-trained MedViT_small model.
+    Loads the pre-trained MedViT model.
+
+    Args:
+        pretrained_model (str): The type of pre-trained MedViT model to load ('small' or 'large').
 
     Returns:
         nn.Module: The pre-trained MedViT model.
     """
     if pretrained_model == 'small':
-        pretrained_model = small()
-        checkpoint = torch.load('saved_models/MedViT_small_im1k.pth')
+        model = small()
+        checkpoint_path = 'saved_models/MedViT_small_im1k.pth'
     elif pretrained_model == 'large':
-        pretrained_model = large()
-        checkpoint = torch.load('saved_models/MedViT_large_im1k.pth')
+        model = large()
+        checkpoint_path = 'saved_models/MedViT_large_im1k.pth'
     else:
         raise ValueError(f"Invalid pretrained model: {pretrained_model}")
+
+    # Check if running inside Docker by checking the environment variable
+    if os.getenv('IN_DOCKER') == '1':
+        checkpoint = torch.load(checkpoint_path, map_location=torch.device('cpu'))
+    else:
+        checkpoint = torch.load(checkpoint_path)
     
-    #checkpoint = torch.load('saved_models/MedViT_small_im1k.pth')
-    pretrained_model.load_state_dict(checkpoint['model'])
-    return pretrained_model
+    model.load_state_dict(checkpoint['model'])
+    return model
 
 class MedViTSegmentation(nn.Module):
     """
