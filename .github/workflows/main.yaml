@@ -1,0 +1,75 @@
+name: workflow
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  integration:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'  
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run unit tests
+        run: |
+          pip install pytest
+          pytest
+
+  build-and-push-ecr-image:
+    name: Continuous Delivery
+    needs: integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Utilities
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq unzip
+
+      - name: Build Docker Image
+        id: build-image
+        env:
+          IMAGE_TAG: latest
+        run: |
+          docker build -t myapp:$IMAGE_TAG .
+          echo "::set-output name=image::myapp:$IMAGE_TAG"
+          
+  Continuous-Deployment:
+    needs: build-and-push-ecr-image
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Pull latest images
+        run: |
+         docker pull myapp:latest
+         
+      - name: Run Docker Image to serve users
+        run: |
+         docker run -d -p 8080:8080 --name=agcapp myapp:latest
+         
+      - name: Clean previous images and containers
+        run: |
+         docker system prune -f

@@ -32,8 +32,7 @@ else:
 # Check if the pre-trained model file already exists
 if not os.path.exists(pretrained_file_path):
     # Google Drive file ID for the pre-trained model
-    pretrained_file_id = '14wcH5cm8P63cMZAUHA1lhhJgMVOw_5VQ'  # Replace with the actual file ID
-
+    pretrained_file_id = '14wcH5cm8P63cMZAUHA1lhhJgMVOw_5VQ'  
     # URL to the pre-trained model file
     pretrained_url = f'https://drive.google.com/uc?id={pretrained_file_id}'
 
