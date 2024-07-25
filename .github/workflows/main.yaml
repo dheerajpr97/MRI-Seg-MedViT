@@ -59,7 +59,7 @@ jobs:
           
   Continuous-Deployment:
     needs: build-and-push-ecr-image
-    runs-on: self-hosted
+    runs-on: ubuntu-latest #self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -70,7 +70,7 @@ jobs:
          
       - name: Run Docker Image to serve users
         run: |
-         docker run -d -p 8080:8080 --name=agcapp myapp:latest
+         docker run -d -p 8080:8080 --name=medvitsegapp myapp:latest
          
       - name: Clean previous images and containers
         run: |
