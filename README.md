@@ -86,4 +86,5 @@ This project utilizes the MedViT model and related scripts from the [Original Re
 -  [x] Refactor code in all the scripts
 -  [x] Add an UI script and expose it locally as an application
 -  [x] Encapsulate and containerize the project
--  [] Add a CI/CD pipeline
+-  [x] Add a CI/CD pipeline
+- [] Add Cloud functionality
